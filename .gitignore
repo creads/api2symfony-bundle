@@ -1,0 +1,6 @@
+/vendor/
+/test/app/cache
+/test/app/logs
+composer.lock
+composer.phar
+.DS_Store

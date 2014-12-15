@@ -1,0 +1,14 @@
+
+    /**
+     * {{ action.description }}
+     *
+     * @Route("{{ action.route.path }}", name="{{ action.route.name }}")
+     * @Method({"{{ action.method }}"})
+     */
+    public function {{ action.name }}({% for parameter in action.parameters %}${{ parameter }}{% if loop.last == false %}, {% endif %}{% endfor %})
+    {
+        {% if action.response %}
+        {%- include 'Api2SymfonyBundle::response.php.twig' with { 'response' : action.response } %}
+        {% endif %}
+
+    }

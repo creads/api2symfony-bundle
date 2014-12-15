@@ -1,0 +1,31 @@
+#%RAML 0.8
+title: Api Example
+version: 1.0.1-alpha
+
+/posts:
+  description: Collection of available post resource
+  get:
+    description: Get a list of post
+  post:
+    description: Create a new post
+  /{id}:
+    displayName: Post
+    get:
+      description: Get a single post
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "title": "An amazing news"
+                }
+    delete:
+      description: Delete a specific post
+    /comments:
+      description: Collection of available post's comments
+      displayName: Comments
+      get:
+        description: Get list of comment for given post
+      post:
+        description: Comment a post

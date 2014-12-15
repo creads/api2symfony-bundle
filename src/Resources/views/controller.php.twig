@@ -1,0 +1,21 @@
+<?php
+
+namespace {{ controller.namespace }};
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+
+/**
+ * {{ controller.description }}
+ *
+ * This is an auto generated class provided by Creads\Api2Symfony PHP library.
+ */
+class {{ controller.name }} extends Controller
+{
+    {%- for action in controller.actions %}
+    {%- include 'Api2SymfonyBundle::action.php.twig' with { 'action' : action } %}
+
+    {%- endfor %}
+}
