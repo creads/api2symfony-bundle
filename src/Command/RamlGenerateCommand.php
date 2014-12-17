@@ -26,7 +26,9 @@ class RamlGenerateCommand extends ContainerAwareCommand
     {
         $dialog = $this->getHelperSet()->get('dialog');
 
-        $controllers = $this->getContainer()->get('api2symfony.converter.raml')->convert($input->getArgument('file'), str_replace('/', '\\', $input->getArgument('namespace')));
+        $namespace = $input->getArgument('namespace');
+
+        $controllers = $this->getContainer()->get('api2symfony.converter.raml')->convert($input->getArgument('file'), str_replace('/', '\\', $namespace));
 
         $destination = $input->hasOption('destination') ? $input->getOption('destination') : null;
 
@@ -48,7 +50,7 @@ class RamlGenerateCommand extends ContainerAwareCommand
 
         foreach ($controllers as $controller) {
             if ($this->getContainer()->get('api2symfony.dumper')->exists($controller, $destination)) {
-                $output->writeln(sprintf('<error>A controller with the same name "%s" already exist.</error>', $controller->getName()));
+                $output->writeln(sprintf('<error>A controller with the name "%s" already exists.</error>', $controller->getName()));
                 if (!$dialog->askConfirmation(
                     $output,
                     '<question>Would you like to backup it (.old) and overwrite it ? [y/N] </question>',
@@ -59,7 +61,7 @@ class RamlGenerateCommand extends ContainerAwareCommand
             }
 
             $file = $this->getContainer()->get('api2symfony.dumper')->dump($controller, $destination);
-            $output->writeln(sprintf('Created: <info>%s</info>', $file));
+            $output->writeln(sprintf('Created: <info>%s</info>', $controller->getName()));
         }
     }
 }
