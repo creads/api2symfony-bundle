@@ -1,6 +1,6 @@
 /vendor/
-/test/app/cache
-/test/app/logs
+/tests/app/cache
+/tests/app/logs
 composer.lock
 composer.phar
 .DS_Store
