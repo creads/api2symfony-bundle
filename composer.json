@@ -1,6 +1,6 @@
 {
     "name": "creads/api2symfony-bundle",
-    "description": "A Symfony bundle to automatically create Symfony controllers from a standard API specification.",
+    "description": "A Symfony2 bundle to automatically generate controllers from standard API specifications (RAML, Blueprint, Swagger...)",
     "license": "MIT",
     "type": "symfony-bundle",
     "version": "1.0.0",

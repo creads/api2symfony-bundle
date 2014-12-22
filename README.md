@@ -1,13 +1,17 @@
 # Api2Symfony Bundle
 
-A Symfony bundle to automatically create Symfony controllers from a standard API specification.
+A Symfony2 bundle to automatically generate controllers from standard API specifications (RAML, Blueprint, Swagger...)
 
-This bundle uses the [api2symfony](https://github.com/creads/api2symfony) library.
-
-We only support the following specification formats now:
+BUT... We only support the following specification formats now:
 
 * RAML
 
+But we'd like to also support:
+
+* Blueprint
+* Swagger
+
+This bundle uses the [api2symfony](https://github.com/creads/api2symfony) library.
 
 ## Installation
 
