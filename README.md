@@ -164,9 +164,3 @@ Generated code:
 	    }
 	}
 ```
-
-## License
-
-Released under MIT license.
-
-Please read the LICENSE file.
