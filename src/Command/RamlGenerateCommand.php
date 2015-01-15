@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Console\Question\Question;
 
 class RamlGenerateCommand extends ContainerAwareCommand
 {
@@ -24,7 +25,7 @@ class RamlGenerateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
+        $dialog = $this->getHelperSet()->get('question');
 
         $namespace = $input->getArgument('namespace');
 
@@ -37,10 +38,10 @@ class RamlGenerateCommand extends ContainerAwareCommand
         $fs = new Filesystem();
         if (!$fs->exists($destination)) {
             $output->writeln(sprintf('<error>Destination directory %s does not exist.</error>', $destination));
-            if (!$dialog->askConfirmation(
+            if (!$dialog->ask(
+                $input,
                 $output,
-                '<question>Would you like to create it ? [y/N] </question>',
-                false
+                new Question('<question>Would you like to create it ? [y/N] </question>', false)
             )) {
                 exit;
             }
@@ -51,10 +52,10 @@ class RamlGenerateCommand extends ContainerAwareCommand
         foreach ($controllers as $controller) {
             if ($this->getContainer()->get('api2symfony.dumper')->exists($controller, $destination)) {
                 $output->writeln(sprintf('<error>A controller with the name "%s" already exists.</error>', $controller->getName()));
-                if (!$dialog->askConfirmation(
+                if (!$dialog->ask(
+                    $input,
                     $output,
-                    '<question>Would you like to backup it (.old) and overwrite it ? [y/N] </question>',
-                    false
+                    new Question('<question>Would you like to backup it (.old) and overwrite it ? [y/N] </question>', false)
                 )) {
                     continue;
                 }
