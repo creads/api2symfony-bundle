@@ -18,14 +18,14 @@
     "require": {
         "symfony/http-kernel": "~2.3",
         "creads/api2symfony": "1.0.*@dev",
-        "symfony/filesystem": "2.7.*@dev",
-        "symfony/twig-bundle": "2.7.*@dev"
+        "symfony/filesystem": "~2.3",
+        "symfony/twig-bundle": "~2.3"
     },
     "require-dev": {
         "symfony/framework-bundle": "~2.3",
-        "symfony/console": "2.5.*@dev",
-        "symfony/yaml": "2.6.*@dev",
-        "symfony/finder": "2.5.*@dev"
+        "symfony/console": "~2.3",
+        "symfony/yaml": "~2.3",
+        "symfony/finder": "~2.3"
     },
     "extra": {
         "branch-alias": {
