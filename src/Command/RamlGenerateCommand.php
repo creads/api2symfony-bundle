@@ -76,12 +76,10 @@ EOT
         }
 
         foreach ($controllers as $controller) {
-
-
-
             if ($this->getContainer()->get('api2symfony.dumper')->exists($controller, $destination)) {
-
-                $output->writeln(sprintf('* <comment>%s</comment>: <error>EXISTS</error>', $controller->getClassName()));
+                if ($input->isInteractive()) {
+                    $output->writeln(sprintf('* <comment>%s</comment>: <error>EXISTS</error>', $controller->getClassName()));
+                }
                 $answer = $dialog->ask(
                     $input,
                     $output,
@@ -90,10 +88,13 @@ EOT
                 if ($answer === 'n' || $answer === 'N') {
                     continue;
                 }
+                $output->writeln(sprintf('* <comment>%s</comment>: <info>OVERWRITTEN</info>', $controller->getClassName()));
+            } else {
+                $output->writeln(sprintf('* <comment>%s</comment>: <info>CREATED</info>', $controller->getClassName()));
             }
 
             $file = $this->getContainer()->get('api2symfony.dumper')->dump($controller, $destination);
-            $output->writeln(sprintf('* <comment>%s</comment>: <info>OK</info>', $controller->getClassName()));
+
         }
     }
 }
