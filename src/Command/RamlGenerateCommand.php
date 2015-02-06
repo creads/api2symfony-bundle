@@ -77,12 +77,15 @@ EOT
 
         foreach ($controllers as $controller) {
 
+
+
             if ($this->getContainer()->get('api2symfony.dumper')->exists($controller, $destination)) {
-                $output->writeln(sprintf('<error>Controller %s already exists.</error>', $controller->getClassName()));
+
+                $output->writeln(sprintf('* <comment>%s</comment>: <error>EXISTS</error>', $controller->getClassName()));
                 $answer = $dialog->ask(
                     $input,
                     $output,
-                    new Question(sprintf('<question>Do you want to overwrite this file (previous file version will be renamed with extension .old) ? [Y]/n</question> ', $controller->getClassName()), false)
+                    new Question(sprintf('<question>Overwrite this file (previous file will be renamed with extension .old) ?</question> [Y]/n ', $controller->getClassName()), false)
                 );
                 if ($answer === 'n' || $answer === 'N') {
                     continue;
@@ -90,7 +93,7 @@ EOT
             }
 
             $file = $this->getContainer()->get('api2symfony.dumper')->dump($controller, $destination);
-            $output->writeln(sprintf('* <comment>%s</comment> <info>OK</info>', $controller->getClassName()));
+            $output->writeln(sprintf('* <comment>%s</comment>: <info>OK</info>', $controller->getClassName()));
         }
     }
 }
