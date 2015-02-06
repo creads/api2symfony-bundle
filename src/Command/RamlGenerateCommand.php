@@ -16,25 +16,51 @@ class RamlGenerateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('api2symfony:generate:raml')
-            ->setDescription('Convert raml specification to controllers')
-            ->addArgument('file', InputArgument::REQUIRED, 'RAML Specification filename')
-            ->addArgument('namespace', InputArgument::REQUIRED, 'Define a base namespace for you controllers')
-            ->addOption('destination', 'd', InputOption::VALUE_OPTIONAL, 'A destination folder path to save controllers. Default is app cache folder')
+            ->setDescription('Convert a RAML specification to mocked controllers')
+            ->addArgument('raml_file', InputArgument::REQUIRED, 'RAML specification file')
+            ->addArgument('bundle_namespace', InputArgument::REQUIRED, 'Namespace of the bundle where controllers will be dumped')
+            ->addOption('destination', 'd', InputOption::VALUE_OPTIONAL, 'Force another destination for dumped controllers')
+            ->setHelp(<<<EOT
+The <info>%command.name%</info> command will convert a RAML specification to mocked controllers.
+
+  <info>php %command.full_name% path/to/file.raml Base/Namespace/Of/YourBundle [--destination=force/another/destination/path]</info>
+EOT
+            );
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('question');
-
-        $namespace = $input->getArgument('namespace');
-
-        $controllers = $this->getContainer()->get('api2symfony.converter.raml')->convert($input->getArgument('file'), str_replace('/', '\\', $namespace));
-
+        $file = $input->getArgument('raml_file');
+        $namespace = $input->getArgument('bundle_namespace');
         $destination = $input->hasOption('destination') ? $input->getOption('destination') : null;
 
-        $destination = $destination?$destination:$this->getContainer()->getParameter('api2symfony.default_dir');
+        if (!$destination) {
+            //we try to guess the destination from namespace
+            $namespace = preg_replace('/(\\\Controller)?\\\?$/', '', $namespace); //be sure to remove trailing slash or \Controller from namesapce
+            $autoload = $this->getContainer()->getParameter('kernel.root_dir') . '/autoload.php';
+            if (file_exists($autoload)) {
+                $loader = require $autoload;
+                $bundles = $this->getContainer()->getParameter('kernel.bundles');
+                foreach ($bundles as $bundleName => $bundleClass) {
+                    $reflection =  new \ReflectionClass($bundleClass);
+                    if ($namespace === $reflection->getNamespaceName()) {
+                        $bundleFile = $loader->findFile($bundleClass);
+                        $destination = dirname($bundleFile) . '/Controller';
+                    }
+                }
+            }
 
+            if (!$destination) {
+                throw new \RuntimeException(sprintf('Could not guess destination for namespace %s. Please  check it or use --destination to force a destination for generated controllers.', $namespace));
+            }
+        }
+
+        $namespace  = $namespace . '\Controller';
+
+        $controllers = $this->getContainer()->get('api2symfony.converter.raml')->convert($file, str_replace('/', '\\', $namespace));
+
+        $dialog = $this->getHelperSet()->get('question');
         $fs = new Filesystem();
         if (!$fs->exists($destination)) {
             $output->writeln(sprintf('<error>Destination directory %s does not exist.</error>', $destination));
@@ -50,19 +76,21 @@ class RamlGenerateCommand extends ContainerAwareCommand
         }
 
         foreach ($controllers as $controller) {
+
             if ($this->getContainer()->get('api2symfony.dumper')->exists($controller, $destination)) {
-                $output->writeln(sprintf('<error>A controller with the name "%s" already exists.</error>', $controller->getName()));
-                if (!$dialog->ask(
+                $output->writeln(sprintf('<error>Controller %s already exists.</error>', $controller->getClassName()));
+                $answer = $dialog->ask(
                     $input,
                     $output,
-                    new Question('<question>Would you like to backup it (.old) and overwrite it ? [y/N] </question>', false)
-                )) {
+                    new Question(sprintf('<question>Do you want to overwrite this file (previous file version will be renamed with extension .old) ? [Y]/n</question> ', $controller->getClassName()), false)
+                );
+                if ($answer === 'n' || $answer === 'N') {
                     continue;
                 }
             }
 
             $file = $this->getContainer()->get('api2symfony.dumper')->dump($controller, $destination);
-            $output->writeln(sprintf('Created: <info>%s</info>', $controller->getName()));
+            $output->writeln(sprintf('* <comment>%s</comment> <info>OK</info>', $controller->getClassName()));
         }
     }
 }
