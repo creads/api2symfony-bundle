@@ -17,7 +17,7 @@ This bundle uses the [api2symfony](https://github.com/creads/api2symfony) librar
 
 Using composer:
 
-`composer require creads\api2symfony-bundle 1.0.*@dev`
+`composer require creads/api2symfony-bundle 1.0.*@dev`
 
 Register the bundle by updating `AppKernel.php`:
 
