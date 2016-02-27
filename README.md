@@ -24,11 +24,11 @@ Register the bundle by updating `AppKernel.php`:
     <?php
 
 	// in AppKernel::registerBundles()
-	$bundles = array(
-    	// ...
-    	new Creads\Api2SymfonyBundle\Api2SymfonyBundle(),
-    	// ...
-	);
+	if (in_array($this->getEnvironment(), ['dev', 'test'])) {
+    	    // ...
+    	    $bundles[] = new Creads\Api2SymfonyBundle\Api2SymfonyBundle();
+    	    // ...
+	};
 
 ## Use case
 
